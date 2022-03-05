@@ -1,0 +1,27 @@
+h1 {
+    color: blue;
+}
+
+.sidenotes{
+    display:flex;
+    flex-direction: column;
+}
+
+.maincontainer{
+    display: flex;
+    flex-direction: row;
+}
+
+.note{
+    width: 15px;
+    height: 15px;
+    background-color:blue;
+    border: 1px solid;
+    border-color: transparent;
+    border-radius: 15px;
+    position: absolute
+}
+
+.maintext{
+    margin:0
+}

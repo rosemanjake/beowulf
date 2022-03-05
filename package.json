@@ -1,0 +1,22 @@
+{
+  "name": "personalredux",
+  "description": "Simple Hello World Node.js sample for Google App Engine Standard Environment.",
+  "version": "0.0.1",
+  "private": true,
+  "author": "Jake Roseman",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rosemanjake/personal_redux.git"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "fs": "^0.0.1-security",
+    "jsdom": "19.0.0"
+  },
+  "scripts": { 
+    "start": "node index.js" 
+  }
+}
