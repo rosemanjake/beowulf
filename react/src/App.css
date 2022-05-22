@@ -1,0 +1,552 @@
+
+:root {
+  --gold: #FFD700;
+  --garnet: #9A2A2A;
+  --sapphire: #0F52BA;
+  --LightGold: #f9f2ea;
+  --LighterGold: #fffbf7;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond&display=swap');
+
+body{
+  font-family: 'EB Garamond', serif;
+}
+
+.maintext{
+  white-space:pre-wrap;
+}
+
+.chaptertitle{
+  display:none;
+  margin:auto;
+  width:100%;
+  text-align: left;
+  color: var(--garnet);
+  font-size: .75em;
+}
+
+.titleline{
+  background-color: var(--garnet);
+  height:2px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.tocentry{
+  background-color: #9A2A2A;
+  color:white;
+  cursor: pointer;
+  margin:auto;
+  width:100%;
+  padding-top:5px;
+  padding-bottom:5px;
+}
+
+.tocentry:hover{
+  cursor: pointer;
+  color: var(--gold);
+}
+
+.toc{
+  font-size: 1em;
+  position:fixed;
+  top:0;
+  right:0;
+  color:var(--garnet);
+  margin-top: 50px;
+  padding-left: 10px;
+  padding-right: 20px;
+  background-color: #9A2A2A;
+  overflow: auto;
+  height:100vh;
+}
+
+.maincontainer{
+  display:flex;
+  flex-direction:row;
+}
+
+.maintextcontainer{
+  display: flex;
+  flex-direction: column;
+  margin-left: 30px;
+  width:85%;
+}
+
+.maintext{
+  white-space:pre-wrap;
+}
+
+.maintext_notoc{
+  white-space:pre-wrap;
+  display:block;
+}
+
+.knotcolumn{
+  width:12px;
+  height:100%;
+  background-image: url("../public/testknot.png");
+  background-position: center;
+  position:fixed;
+}
+
+.rowcontainer, .mainbuttons, .chapterbuttons{
+  display:flex;
+  flex-direction: row;
+  margin:auto;
+}
+
+.mainbuttons, .chapterbuttons{
+  width:100%;
+}
+
+.genericbutton, .versionbutton, .smallbutton{
+  background-color:var(--garnet);
+  color:white;
+  text-align: center;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1em;
+  transition: 250ms;
+  width: 130px;
+  height: 30px;
+  cursor: pointer;
+  margin: auto;
+}
+
+.genericbutton:hover, .versionbutton:hover, .smallbutton:hover{
+  color: var(--gold);
+  border: 2px solid var(--gold);
+  transition: 250ms;
+}
+
+.smallbutton{
+  width: 150px;
+  height: 30px;
+}
+
+.chapterbutton{
+  color:var(--garnet);
+  margin:auto;
+}
+
+.chapterbutton:hover{
+  color:var(--gold);
+  cursor: pointer;
+}
+
+
+.topcontainer{
+  width:100%;
+  height:50px;
+  background-color: var(--LightGold);
+  top:0;
+  position:sticky;
+  border-bottom: 2px solid;
+  border-color: #9A2A2A;
+  margin:auto;
+  z-index: 999;
+}
+
+.topbar{
+  height:100%;
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
+  top:0;
+  position:sticky;
+  border-bottom: 2px solid;
+  border-color: #9A2A2A;
+  margin:auto;
+}
+
+.bottombar{
+  display:flex;
+  flex-direction: row;
+  height:30px;
+  background-color: var(--LightGold);
+  width:150px;
+  justify-content: center;
+  margin:auto;
+  border-radius: 5px;
+  align-content: center;
+  border: 2px solid var(--garnet);
+  color:var(--garnet);
+  margin-bottom:5px;
+}
+
+.chapterindicator{
+  display:flex;
+  align-content: center;
+  margin:auto;
+  color:var(--garnet);
+  
+}
+
+.dropdown{
+  color:white;
+  text-align: center;
+  border: 2px solid var(--garnet);
+  border-radius: 10px;
+  display: flex;
+  font-size: 1em;
+  transition: 250ms;
+  width: 130px;
+  height: 30px;
+  cursor: pointer;
+  flex-direction: column;
+  margin:auto;
+  color:var(--garnet);
+}
+
+.dropdown:hover{
+  color:gold;}
+
+
+.versionbutton:hover{
+  color:var(--gold);
+}
+
+.versionentry, .activeversionentry{
+  background-color: var(--LighterGold);
+  cursor: pointer;
+  width:50%;
+  padding-top:15px;
+  padding-bottom:15px;
+  border-left:2px solid transparent;
+  padding-left: 10px;
+}
+
+.activeversionentry{
+  color:#9A2A2A;
+  font-weight: 550;
+  border-left:2px solid var(--garnet)
+  
+}
+
+.versionentry:hover{
+  color:var(--gold);
+}
+
+.hidden{
+  display:none;
+}
+
+.hamburgerold{
+  text-align:right;
+  width:40px;
+  padding:10px;
+  cursor:pointer;
+  filter: invert(100%) sepia(0%) saturate(2%) hue-rotate(14deg) brightness(103%) contrast(100%);
+}
+
+.hamburgercontainer{
+  display:flex;
+  align-items:center;
+  justify-content: center;
+}
+
+.hamburger{
+  display:block;
+  fill:var(--garnet);
+  cursor: pointer;
+}
+
+.hamburger:hover{
+  fill:var(--gold);
+  transition:100ms
+}
+
+.centercontainer{
+  display:flex;
+  align-items: center;
+}
+
+.maintitle{
+  font-size:1.5em;
+  color:var(--garnet);
+  margin-left:30px;
+}
+
+.maintitleline{
+  height:75%;
+  width:4px;
+  background-color:var(--gold);
+  margin-left:20px;
+  margin-right:20px;
+  display:none;
+}
+
+.activechapter{
+  font-weight: 600;
+}
+
+.bottomcontainer{
+  display:flex;
+  width:100%;
+  justify-content: center;
+  position:fixed;
+  bottom:20px;
+  flex-direction: column;
+  align-content: center;
+}
+
+.copyright{
+  font-size: .8em;
+  width:250px;
+  margin:auto;
+  text-align: center;
+  cursor: pointer;
+}
+
+.topbuttons{
+  display:flex;
+  flex-direction: row;
+  align-content: center;
+}
+
+.mobilechaptertitle{
+  width:100%;
+  margin:auto;
+  font-size:1.25em;
+  margin-top:15px;
+  margin-bottom:15px;
+  color:var(--garnet);
+  height:30px;
+}
+
+.sidenotes{
+  width:20px;
+  position: absolute;
+  right:0%;
+}
+
+.sidenotebutton{
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  cursor:pointer;
+  position:absolute;
+  background-color: #9A2A2A;
+}
+
+.sidenotebutton:hover{
+  background-color: #FFD700;
+  box-shadow: 0 0 20px 5px var(--LightGold);
+  transition:250ms
+}
+
+.bottomspace{
+  height:70px;
+  width:100%;
+}
+
+.topspace{
+  display:none;
+  height:40px;
+  width:100%;
+}
+
+.dialogcontainer{
+  position:fixed;
+  right: 5%;
+  margin-right:0px;
+  margin-top:10px;
+  top:50px;
+  z-index:99;
+  max-width:300px;
+  display: flex;
+  flex-direction: row;
+}
+
+.dialog{
+  color:black;
+  background-color: var(--LighterGold);
+  border: 2px solid var(--garnet);
+  padding:15px;
+}
+
+.dialogtriangle{
+  width: 0; 
+  height: 0; 
+  border-top: 20px solid var(--garnet);
+  border-bottom: 20px solid transparent; 
+  border-right:20px solid transparent; 
+}
+
+.optionscontainer{
+  position:fixed;
+  height:100%;
+  width:250px;
+  right:0;
+  top:0;
+  background-color: var(--LightGold);
+  border-left: 2px solid var(--garnet);
+  margin-top:50px;
+  z-index: 999;
+  overflow-y: scroll;
+  padding-bottom:50px;
+}
+
+.options{
+  padding:15px;
+}
+
+.optionsheadingcontainer{
+  display:flex;
+  flex-direction: row;
+  align-content: center;
+  margin-bottom: 1em;
+  margin-top: 1.5em;
+  cursor: pointer;
+}
+
+.optionsheading{
+  font-size: 1.1em;
+  color: var(--garnet);
+ 
+}
+
+.optionsarrow, .optionsarrowactive{
+  width: 0; 
+  height: 0; 
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+  border-left: 7px solid var(--garnet);
+  margin-top:5px;
+  margin-left:10px;
+  transition:250ms;
+}
+
+.optionsarrowactive{
+  transform: rotate(90deg);
+}
+
+.navigationcontainer{
+  display:flex;
+  flex-direction: row;
+}
+
+.navigationbutton{
+  margin-right:10px;
+  background-color: var(--LighterGold);
+  color:var(--garnet);
+  cursor: pointer;
+  padding:10px;
+  width:25px;
+  text-align:center;
+  border: 2px solid var(--garnet);
+  border-radius: 5px;
+  margin-top: 10px;
+  font-weight: 550;
+}
+
+.navigationbutton:hover{
+  margin-right:10px;
+  color:var(--gold);
+  border: 2px solid var(--gold);
+}
+
+.chapterinput{
+  width:25px;
+  background-color: var(--LighterGold);
+  border: 2px solid transparent;
+  margin-left: 10px;
+  font-family: 'EB Garamond', serif;
+  text-align:center;
+}
+
+.optionstext{
+  margin-bottom:10px;
+}
+
+@media screen and (min-width: 600px) {
+  .knotcolumn{
+    margin-left:0px;
+  }
+
+  .maintextcontainer{
+    /*margin-left:183px;*/
+    font-size:1.1em;
+
+  }
+
+  .maincontainer{
+    display:flex;
+    flex-direction:row;
+    margin-left:143px;
+  }
+
+  .maintext{
+    display:none;
+    width:75%;
+  }
+
+  .optionscontainer{
+    width:20%;
+  }
+
+  .mainbuttons{
+    width:50%;
+  }
+
+  .chapterbuttons{
+    width:100%;
+    justify-content: center;
+    margin: 0;
+  }
+
+  .chaptertitle{
+    font-size:1.5em;
+  }
+
+  .topbar{
+    width:60%;
+  }
+
+  .maincontainer{
+    width:60%;
+    margin:auto;
+  }
+
+  .sidenotes{
+    right:20%
+  }
+
+  .dialogcontainer{
+    right: 20%;
+    margin-right:20px;
+  }
+}
+
+@media screen and (min-width: 1400px) {
+  .knotcolumn{
+    margin-left:156px;
+  }
+
+  .maintextcontainer{
+    margin-left:183px;
+    width:60%;
+  }
+
+  .chaptertitle{
+    display:block;
+  }
+
+  .mobilechaptertitle{
+    display:none;
+  }
+
+  .topspace{
+    display:block;
+  }
+
+  .maintitleline{
+    display:block;
+  }
+}
+
