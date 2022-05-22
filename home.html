@@ -8,10 +8,14 @@
   </head>
   <body onload="init()">
 
+    <button onclick="changeType()">Prose version</button>
     <button onclick="switchVersion(1)">Switch version</button>
     <button onclick="changeChapter(-1)">Previous chapter</button>
     <button onclick="changeChapter(1)">Next chapter</button>
+
+    <div id="chaptertitle"></div>
     <div id="maincontainer" class="maincontainer">
+      <div id="toc" class="toc"></div>
       <div id="maincontent"></div>
       <div id="sidenotes" class="sidenotes"></div>
     </div>

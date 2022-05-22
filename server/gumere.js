@@ -36,7 +36,6 @@ function getGChapters(text){
 function getGLineMap(chapters){
     let linemap = {}
 
-
     let lineno = 1
     chapters.forEach((chapter) => {
         chapter.lines.forEach(line => {
@@ -52,24 +51,16 @@ function getGLineMap(chapters){
 // key = chapter number (starting from 1)
 // value[0] == index of first line in chapter (starting from 1)
 // value[1] == index of last line in chapter (starting from 1)
-function getGLineRange(chapters, linemap){
-    let linenos = Array.from(Object.keys(linemap))
-    let linetexts = Array.from(Object.values(linemap))
-    let reversemap = {}
-    linetexts.forEach((linetext, i) => {
-        reversemap[linetext] = linenos[i]
-    })
-
+function getGLineRange(chapters){
+    let linecount = 0
     let linerange = {}
 
     chapters.forEach((chapter, i) => {
-        let firstline = chapter.lines[0]
-        let lastline = chapter.lines[chapter.lines.length - 1]
-
-        let firstindex = reversemap[firstline]
-        let lastindex = reversemap[lastline]
+        let firstindex = linecount + 1 
+        let lastindex = firstindex + chapter.lines.length - 1
 
         linerange[i+1] = [firstindex, lastindex]
+        linecount = linecount + chapter.lines.length
     })
 
     return linerange

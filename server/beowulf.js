@@ -19,12 +19,16 @@ class Beowulf{
         this.footnotes = getFootnotes(this.document)
         this.linemap = getLineMap(this.chapters)
         this.sidenotemap = getSideNoteMap(this.chapters)
+        this.chaptertitles = getChapterTitles(this.chapters)
+        this.chaptermap = getChapterMap(this.chaptertitles)
+        this.romanchapters = getRomanChapters(this.chapters)
     }
 }
 
 class Chapter{
     constructor(DOMchapter){
-        this.title = `${DOMchapter.id}: ${getTitle(DOMchapter)}`
+        //this.title = `${DOMchapter.id}: ${getTitle(DOMchapter)}` // FOR IF WE WANT THE ROMAN NUMERALS IN THE HEADING
+        this.title = getTitle(DOMchapter)
         this.lines = getLines(DOMchapter)
         this.linerange = getLineRange(this.lines)
     }
@@ -39,6 +43,16 @@ class Line{
         this.refplace = refplace // Char at which reference appears in line NOTE: This way we can only have one reference per line
         this.splitplace = splitplace // Char at which there is a line division into 2
     }
+}
+
+function getChapterTitles(chapters){
+    titles = []
+
+    chapters.forEach(chapter => {
+        titles.push(chapter.title)
+    })
+
+    return titles
 }
 
 function getSideNoteMap(chapters){
@@ -110,7 +124,8 @@ function getLines(chapter){
         if(i > 0){
             let prevchild = chapter.children[i-1]
             if (prevchild.className == "sidenote"){
-                sidenote = prevchild.innerHTML.replace(/[\n]+/g, " ")
+                sidenote = prevchild.innerHTML.replace(/\s+/g, " ")
+                //sidenote = sidenote.replace(/\s{2,}/g,"")
             }
         }
 
@@ -169,4 +184,40 @@ function getFootText(HTML){
 // Returns start lineno and end lineno
 function getLineRange(lines){
     return [lines[0].lineno, lines[lines.length - 1].lineno]
+}
+
+function getRomanChapters(chaptertitles){
+    let result = []
+
+    for (let i = 0; i < chaptertitles.length; i++){
+        result.push(romanise(i+1))
+    }
+
+    return result
+}
+
+function romanise (num) {
+    if (isNaN(num))
+        return NaN;
+    var digits = String(+num).split(""),
+        key = ["","C","CC","CCC","CD","D","DC","DCC","DCCC","CM",
+               "","X","XX","XXX","XL","L","LX","LXX","LXXX","XC",
+               "","I","II","III","IV","V","VI","VII","VIII","IX"],
+        roman = "",
+        i = 3;
+    while (i--)
+        roman = (key[+digits.pop() + (i * 10)] || "") + roman;
+    return Array(+digits.join("") + 1).join("M") + roman;
+}
+
+// key = chapter number
+// value = chapter title
+function getChapterMap(chaptertitles){
+    let result = {}
+
+    for (let i = 0; i < chaptertitles.length; i++){
+        result[i + 1] = chaptertitles[i]
+    }
+
+    return result
 }
