@@ -16,7 +16,7 @@ const api = axios.create({
 
 const rawversions = {
   "Original": "as",
-  "Gumere": "g",
+  "Gummere": "g",
   "Morris": "mw",
   "Kirtlan": "p",
 }

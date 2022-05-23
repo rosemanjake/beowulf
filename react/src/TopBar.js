@@ -98,6 +98,7 @@ function Options(props){
         <div className="optionstext">All texts are in the public domain and sourced from project Gutenberg:</div>
         <ul>
           <li>Gummere, Francis. (1910). Beowulf. <a href="https://www.gutenberg.org/ebooks/981">Gutenberg</a></li>
+          <li>Hall, Lessie. (1892). Beowulf: An Anglo-Saxon Epic Poem. <a href="https://www.gutenberg.org/ebooks/16328">Gutenberg</a></li>
           <li>Kirtlan, Ernest J. B. (1914). The Story of Beowulf. <a href="https://www.gutenberg.org/ebooks/50742">Gutenberg</a></li>
           <li>Morris, William. (1895). The Tale of Beowulf, Sometime King of the Folk of the Weder Geats. <a href="https://www.gutenberg.org/ebooks/20431">Gutenberg</a></li>
         </ul>
