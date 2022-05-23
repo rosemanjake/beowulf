@@ -9,6 +9,25 @@
 
 @import url('https://fonts.googleapis.com/css2?family=EB+Garamond&display=swap');
 
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f0f0f0; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #cdcdcd; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+background: #a6a6a6; 
+}
+
 body{
   font-family: 'EB Garamond', serif;
 }
@@ -95,7 +114,10 @@ body{
   display:flex;
   flex-direction: row;
   margin:auto;
+  justify-content: center;
+  align-content: center;
 }
+
 
 .mainbuttons, .chapterbuttons{
   width:100%;
@@ -149,7 +171,8 @@ body{
   border-bottom: 2px solid;
   border-color: #9A2A2A;
   margin:auto;
-  z-index: 999;
+  z-index: 9999;
+  filter: drop-shadow(0 0 0.3rem lightgrey);
 }
 
 .topbar{
@@ -162,6 +185,7 @@ body{
   border-bottom: 2px solid;
   border-color: #9A2A2A;
   margin:auto;
+
 }
 
 .bottombar{
@@ -176,7 +200,8 @@ body{
   align-content: center;
   border: 2px solid var(--garnet);
   color:var(--garnet);
-  margin-bottom:5px;
+  margin-bottom:10px;
+  
 }
 
 .chapterindicator{
@@ -187,49 +212,53 @@ body{
   
 }
 
-.dropdown{
-  color:white;
-  text-align: center;
-  border: 2px solid var(--garnet);
-  border-radius: 10px;
-  display: flex;
-  font-size: 1em;
-  transition: 250ms;
-  width: 130px;
-  height: 30px;
-  cursor: pointer;
-  flex-direction: column;
+.dropdownbuttoncontainer{
+  display:flex;
+  flex-direction: row;
   margin:auto;
-  color:var(--garnet);
+  height:100%;
+  width:120px;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  cursor:pointer;
 }
 
-.dropdown:hover{
-  color:gold;}
+.dropdown{
+  font-size: 1.1em;
+  color: var(--garnet);
+  cursor: pointer;
+  transition: 200ms;
+}
 
 
 .versionbutton:hover{
   color:var(--gold);
 }
 
-.versionentry, .activeversionentry{
-  background-color: var(--LighterGold);
+.versionentry, .activeversionentry, .chapterentry, .activechapterentry{
+  background-color: var(--LightGold);
   cursor: pointer;
-  width:50%;
   padding-top:15px;
   padding-bottom:15px;
   border-left:2px solid transparent;
-  padding-left: 10px;
+  text-align: center;
 }
 
-.activeversionentry{
+.chapterentry, .activechapterentry{
+  padding-top:5px;
+  padding-bottom:5px;
+}
+
+.activeversionentry, .activechapterentry{
   color:#9A2A2A;
   font-weight: 550;
-  border-left:2px solid var(--garnet)
-  
+  border-left:2px solid var(--garnet);
 }
 
-.versionentry:hover{
+.versionentry:hover, .activeversionentry:hover, .chapterentry:hover, .activechapterentry:hover{
   color:var(--gold);
+  border-left:2px solid var(--gold)
 }
 
 .hidden{
@@ -306,7 +335,7 @@ body{
 .topbuttons{
   display:flex;
   flex-direction: row;
-  align-content: center;
+  justify-content: end;
 }
 
 .mobilechaptertitle{
@@ -341,7 +370,7 @@ body{
 }
 
 .bottomspace{
-  height:70px;
+  height:100px;
   width:100%;
 }
 
@@ -387,10 +416,12 @@ body{
   background-color: var(--LightGold);
   border-left: 2px solid var(--garnet);
   margin-top:50px;
-  z-index: 999;
+  z-index: 99999;
   overflow-y: scroll;
   padding-bottom:50px;
 }
+
+
 
 .options{
   padding:15px;
@@ -403,6 +434,12 @@ body{
   margin-bottom: 1em;
   margin-top: 1.5em;
   cursor: pointer;
+}
+
+.dropdowncontainer{
+  flex-direction: column;
+  height:100%;
+  border-bottom: 2px solid var(--garnet)
 }
 
 .optionsheading{
@@ -419,7 +456,13 @@ body{
   border-left: 7px solid var(--garnet);
   margin-top:5px;
   margin-left:10px;
-  transition:250ms;
+  transition:200ms;
+}
+
+.bigdropdown{
+  overflow-y:scroll;
+  max-height: 66vh;
+  scrollbar-width: thin;
 }
 
 .optionsarrowactive{
@@ -462,6 +505,26 @@ body{
 
 .optionstext{
   margin-bottom:10px;
+}
+
+.donatebutton{
+  background-color: #9A2A2A;
+  color:white;
+  text-align:center;
+  cursor:pointer;
+  border: 2px solid transparent;
+  padding:10px;
+  border-radius: 5px;
+  transition:250ms;
+  width:100px;
+  font-size: 1.1em;
+  margin:auto;
+  margin-bottom: 40px;
+}
+
+.donatebutton:hover{
+  color:var(--gold);
+  border: 2px solid var(--gold)
 }
 
 @media screen and (min-width: 600px) {
