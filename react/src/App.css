@@ -217,7 +217,7 @@ body{
   flex-direction: row;
   margin:auto;
   height:100%;
-  width:120px;
+  width:100px;
   justify-content: center;
   align-items: center;
   align-content: center;
@@ -225,7 +225,6 @@ body{
 }
 
 .dropdown{
-  font-size: 1.1em;
   color: var(--garnet);
   cursor: pointer;
   transition: 200ms;
@@ -528,6 +527,18 @@ body{
 }
 
 @media screen and (min-width: 600px) {
+  .topbuttons{
+    margin-left: 0px;
+  }
+
+  .dropdownbuttoncontainer{
+    width:120px;
+  }
+
+  .dropdown{
+    font-size: 1.1em;
+  }
+
   .knotcolumn{
     margin-left:0px;
   }

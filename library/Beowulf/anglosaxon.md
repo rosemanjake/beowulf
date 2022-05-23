@@ -144,7 +144,7 @@ fyr ond fæstor se þæm feonde ætwand.
 Swa rixode ond wið rihte wan, 
 ana wið eallum, oðþæt idel stod 
 husa selest. Wæs seo hwil micel; 
-XII wintra tid torn geþolode 
+wintra tid torn geþolode 
 wine Scyldinga, weana gehwelcne, 
 sidra sorga. Forðam secgum wearð, 
 ylda bearnum, undyrne cuð, 
@@ -204,7 +204,7 @@ lythwon logon, þeah he him leof wære;
 hwetton higerofne, hæl sceawedon. 
 Hæfde se goda Geata leoda 
 cempan gecorone þara þe he cenoste 
-findan mihte; XVna sum 
+findan mihte; na sum 
 sundwudu sohte; secg wisade, 
 lagucræftig mon, landgemyrcu. 
 Fyrst forð gewat. Flota wæs on yðum, 
@@ -376,7 +376,7 @@ angan dohtor; is his eafora nu
 heard her cumen, sohte holdne wine. 
 ðonne sægdon þæt sæliþende, 
 þa ðe gifsceattas Geata fyredon 
-þyder to þance, þæt he XXXtiges 
+þyder to þance, þæt he tiges 
 manna mægencræft on his mundgripe 
 heaþorof hæbbe. Hine halig god 
 for arstafum us onsende, 
@@ -387,7 +387,7 @@ Beo ðu on ofeste, hat in gan
 seon sibbegedriht samod ætgædere; 
 gesaga him eac wordum þæt hie sint wilcuman 
 Deniga leodum. 
-[] word inne abead: 
+word inne abead: 
 Eow het secgan sigedrihten min, 
 aldor Eastdena, þæt he eower æþelu can, 
 ond ge him syndon ofer sæwylmas 
@@ -1864,7 +1864,7 @@ lac ond luftacen. Ic þa leode wat
 ge wið feond ge wið freond fæste geworhte,
 æghwæs untæle ealde wisan."
 ða git him eorla hleo inne gesealde,
-mago Healfdenes, maþmas [XII];
+mago Healfdenes, maþmas;
 het hine mid þæm lacum leode swæse
 secean on gesyntum, snude eft cuman.
 Gecyste þa cyning æþelum god,
@@ -2358,7 +2358,7 @@ freawine folca Freslondum on,
 Hreðles eafora hiorodryncum swealt,
 bille gebeaten. þonan Biowulf com
 sylfes cræfte, sundnytte dreah;
-hæfde him on earme ana [XXX]
+hæfde him on earme ana
 hildegeatwa, þa he to holme beag.
 Nealles Hetware hremge þorfton
 feðewiges, þe him foran ongean
@@ -2398,7 +2398,7 @@ Swa he niða gehwane genesen hæfde,
 sliðra geslyhta, sunu Ecgðiowes,
 ellenweorca, oð ðone anne dæg
 þe he wið þam wyrme gewegan sceolde.
-Gewat þa [XII]a sum torne gebolgen
+Gewat þa a sum torne gebolgen
 dryhten Geata dracan sceawian.
 Hæfde þa gefrunen hwanan sio fæhð aras,
 bealonið biorna; him to bearme cwom

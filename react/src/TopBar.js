@@ -109,7 +109,7 @@ function ChapterItems(props){
         {
           Object.keys(props.chaptertitles)
             .map(chapter =>
-              <div className={(chapter == props.currchapter) ? 'activechapterentry' : 'chapterentry'} key={chapter + "dropdown"} onClick={() => props.onChapterChange(chapter)}>{chapter}</div>
+              <div className={(chapter == props.currchapter) ? 'activechapterentry' : 'chapterentry'} key={chapter + "dropdown"} onClick={() => props.onChapterChange(parseInt(chapter))}>{chapter}</div>
             )
         }
         </div>
@@ -129,10 +129,10 @@ function Options(props){
       <div className="optionstext">This website was designed and built by <a href="https://www.jakeroseman.com">Jake Roseman.</a></div>
       <div className="optionstext">All texts are in the public domain and sourced from project Gutenberg:</div>
       <ul>
-        <li>Gummere, Francis. (1910). Beowulf. <a href="https://www.gutenberg.org/ebooks/981">Gutenberg</a></li>
-        <li>Hall, Lessie. (1892). Beowulf: An Anglo-Saxon Epic Poem. <a href="https://www.gutenberg.org/ebooks/16328">Gutenberg</a></li>
-        <li>Kirtlan, Ernest J. B. (1914). The Story of Beowulf. <a href="https://www.gutenberg.org/ebooks/50742">Gutenberg</a></li>
-        <li>Morris, William. (1895). The Tale of Beowulf, Sometime King of the Folk of the Weder Geats. <a href="https://www.gutenberg.org/ebooks/20431">Gutenberg</a></li>
+        <li>Gummere, Francis. (1910). <i>Beowulf.</i> <a href="https://www.gutenberg.org/ebooks/981">Gutenberg</a></li>
+        <li>Hall, Lessie. (1892). <i>Beowulf: An Anglo-Saxon Epic Poem.</i> <a href="https://www.gutenberg.org/ebooks/16328">Gutenberg</a></li>
+        <li>Kirtlan, Ernest J. B. (1914). <i>The Story of Beowulf.</i> <a href="https://www.gutenberg.org/ebooks/50742">Gutenberg</a></li>
+        <li>Morris, William. (1895). <i>The Tale of Beowulf, Sometime King of the Folk of the Weder Geats.</i> <a href="https://www.gutenberg.org/ebooks/20431">Gutenberg</a></li>
       </ul>   
     </div>
     </div>
