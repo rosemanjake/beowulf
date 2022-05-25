@@ -14,6 +14,7 @@ function MainText(props) {
     const [dialogpos, setDialogPos] = useState(0)
     const [message, setMessage] = useState("")
     const [prevmessage, setPrevMessage] = useState("")
+    const [mainclass, setMainClass] = useState("maincontainer")
 
     const [searchParams, setSearchParams] = useSearchParams()
     const chapterparam = searchParams.get('c')
@@ -22,11 +23,14 @@ function MainText(props) {
 
     // Fetch text from server
     useEffect(() => {
+      //setMainClass("loading")
       axios.get(props.domain + 'c', {params: {v: props.version, c: props.chapter}}).then(res => {
         setText(res.data[0]);
         setNotes(res.data[1]);
         setShowDialog(false)
         setSearchParams({c: props.chapter, v: props.version})
+        setHeight(mainref.current.scrollHeight) 
+        //setMainClass("maincontainer")
       });
       }, [props.chapter, props.version])
 
@@ -52,7 +56,7 @@ function MainText(props) {
 
     return (
     <>
-    <div className='maincontainer' id='maincontainer'>
+    <div className={mainclass} id='maincontainer'>
       <div className='knotcolumn' key='knot'></div>
       <div className ='maintextcontainer' key='maintext'>
         <div className='topspace'></div>     

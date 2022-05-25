@@ -81,9 +81,13 @@ body{
   height:100vh;
 }
 
-.maincontainer{
+.maincontainer, .loading{
   display:flex;
   flex-direction:row;
+}
+
+.loading{
+  opacity:.5;
 }
 
 .maintextcontainer{
@@ -561,7 +565,7 @@ body{
   }
 }
 
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 650px) {
   .topbuttons{
     margin-left: 0px;
   }
@@ -580,7 +584,7 @@ body{
 
   }
 
-  .maincontainer{
+  .maincontainer, .loading{
     display:flex;
     flex-direction:row;
     margin-left:143px;
@@ -613,7 +617,7 @@ body{
     width:60%;
   }
 
-  .maincontainer{
+  .maincontainer, .loading{
     width:60%;
     margin:auto;
   }

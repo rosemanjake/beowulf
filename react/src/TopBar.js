@@ -157,6 +157,7 @@ const Options = React.forwardRef((props, optionsref) => {
     <div className="options">
       <div className="donatebutton" onClick={() => window.open("https://www.paypal.com/donate/?hosted_button_id=TNN9K9X56KVPQ")}>Donate</div> 
       <div className="optionstext">This website was designed and built by <a href="https://www.jakeroseman.com">Jake Roseman.</a></div>
+      <div className="optionstext">The source code is available <a href="https://github.com/rosemanjake/beowulf">here.</a></div>
       <div className="optionstext">All texts are in the public domain and sourced from project Gutenberg:</div>
       <ul>
         <li>Gummere, Francis. (1910). <i>Beowulf.</i> <a href="https://www.gutenberg.org/ebooks/981">Gutenberg</a></li>
