@@ -2,6 +2,8 @@
 import './App.css';
 import React, { useState, useEffect, useCallback, memo } from 'react';
 import axios from 'axios';
+import { Route, BrowserRouter as Router } from 'react-router-dom';
+
 
 import MainText from './MainText';
 import TopBar from './TopBar';
@@ -42,7 +44,9 @@ function App() {
   return (
     <>
     <TopBar key={"topbar"} version={version} versions={versions} chapter={chapter} chapternums={chapternums} chaptertitles={chaptertitles} onVersionChange={setVersion} onChapterChange={setChapter}/>
-    <MainText key={"maintext"} version={version} chapter={chapter} chaptertitles={chaptertitles} domain={domain}/>
+    <Router>
+      <MainText key={"maintext"} version={version} chapter={chapter} chaptertitles={chaptertitles} domain={domain}/>
+    </Router>
     <BottomBar key={"bottombar"} chapter={chapter} chapternums={chapternums} versions={versions} onVersionChange={setVersion} onChapterChange={setChapter}/>
     </>
   );

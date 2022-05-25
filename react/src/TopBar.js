@@ -1,5 +1,8 @@
-import React, { useState, useEffect, useCallback, memo } from 'react';
+import React, { useState, useEffect, useCallback, useRef, memo } from 'react';
 import ChapterTitle from './ChapterTitle';
+import useOutsideAlerter from './OutsiderAlerter';
+
+let timer = 0
 
 function TopBar(props) {
   const [showtoc, setShowToC] = useState(false);
@@ -10,8 +13,13 @@ function TopBar(props) {
   const [showchapteroptions, setShowChapterOptions] = useState(false)
   const [chapterhover, setChapterHover] = useState(false)
 
+  const optionsref = useRef(null)
+  const hamburgerref = useRef(null)
+
   const f = obj => Object.fromEntries(Object.entries(obj).map(a => a.reverse()))
   const flippedversions = f(props.versions)
+
+  //useOutsideAlerter([optionsref, hamburgerref], onShowOptionsChange, showoptions)
 
   return (
     <>
@@ -26,7 +34,7 @@ function TopBar(props) {
           <TopDropDown type={"Chapters"} showdropdown={showversionoptions} setShowDropDown={setShowVersionOptions} setOther={setShowChapterOptions} hoverstate={versionhover} setHoverState={setVersionHover} chaptertitles={props.chaptertitles} onChapterChange={props.onChapterChange} currchapter={props.chapter}/>         
           <TopDropDown type={"Translations"} showdropdown={showchapteroptions} setShowDropDown={setShowChapterOptions} setOther={setShowVersionOptions} hoverstate={chapterhover} setHoverState={setChapterHover} flippedversions={flippedversions} versions={props.versions} onVersionChange={props.onVersionChange} currversion={props.version}/>    
         </div>
-        <div className="hamburgercontainer" onClick={() => setShowOptions(!showoptions)}>
+        <div ref={hamburgerref} className="hamburgercontainer" onClick={() => {setShowOptions(!showoptions)}}>
           <svg viewBox="-55 0 100 80" width="40" height="40" className="hamburger">
             <rect width="15" height="15"></rect>
             <rect y="30" width="15" height="15"></rect>
@@ -36,19 +44,38 @@ function TopBar(props) {
       </div>
     </div>
     {showoptions &&
-      <Options versions={props.versions} version={props.version} onVersionChange={props.onVersionChange} chapter={props.chapter} chapternums={props.chapternums} onChapterChange={props.onChapterChange}/>
+      <Options ref={optionsref} showoptions={showoptions} setShowOptions={setShowOptions} versions={props.versions} version={props.version} onVersionChange={props.onVersionChange} chapter={props.chapter} chapternums={props.chapternums} onChapterChange={props.onChapterChange}/>
     } 
     </>
     );
   }
 
+  const throttle = (func, limit) => {
+    let inThrottle
+    console.log(inThrottle)
+    return function() {
+      const args = arguments
+      const context = this
+      if (!inThrottle) {
+        func.apply(context, args)
+        inThrottle = true
+        setTimeout(() => inThrottle = false, limit)
+      }
+    }
+  }
+  
+
 // Good read on handling input: https://stackoverflow.com/questions/36683770/how-to-get-the-value-of-an-input-field-using-reactjs
 
 function TopDropDown(props){
+  const mainref = useRef(null)
+  useOutsideAlerter([mainref], props.setShowDropDown, props.showdropdown)
+
+  const containerclass = (props.type === 'Chapters') ? 'chapterdropdown' : 'dropdownbuttoncontainer'
 
   return (
     <>
-    <div className="dropdowncontainer" 
+    <div ref={mainref} className="dropdowncontainer" 
       onClick={() => 
         {
           props.setShowDropDown(!props.showdropdown);
@@ -59,7 +86,7 @@ function TopDropDown(props){
       onMouseOver={() => props.setHoverState(true)} 
       onMouseOut={() => props.setHoverState(false)}
     >
-    <div className='dropdownbuttoncontainer'>
+    <div className={containerclass}>
       <div className='dropdown'
         style={(props.hoverstate) ? {color: "var(--gold)"} : {}}
       >{props.type}</div>
@@ -72,7 +99,7 @@ function TopDropDown(props){
       <VersionItems showdropdown={props.showdropdown} flippedversions={props.flippedversions} onVersionChange={props.onVersionChange} versions={props.versions} currversion={props.currversion}/>
     }
     {props.type === 'Chapters' &&
-      <ChapterItems chaptertitles={props.chaptertitles} showdropdown={props.showdropdown} onChapterChange={props.onChapterChange} currchapter={props.currchapter}/>
+      <ChapterItems chaptertitles={props.chaptertitles} showdropdown={props.showdropdown} setShowDropDown={props.setShowDropDown} onChapterChange={props.onChapterChange} currchapter={props.currchapter}/>
     }
     </div>  
     </>
@@ -100,6 +127,7 @@ function VersionItems(props){
 }
 
 function ChapterItems(props){
+
   return(
     <>
     <div className='bigdropdown'>
@@ -120,10 +148,12 @@ function ChapterItems(props){
   )
 }
 
-function Options(props){
+const Options = React.forwardRef((props, optionsref) => {
+  //useOutsideAlerter(mainref, props.setShowOptions, props.showoptions)
+
   return(
     <>
-    <div className="optionscontainer">
+    <div ref={optionsref} className="optionscontainer">
     <div className="options">
       <div className="donatebutton" onClick={() => window.open("https://www.paypal.com/donate/?hosted_button_id=TNN9K9X56KVPQ")}>Donate</div> 
       <div className="optionstext">This website was designed and built by <a href="https://www.jakeroseman.com">Jake Roseman.</a></div>
@@ -138,7 +168,7 @@ function Options(props){
     </div>
     </>
   )
-}
+});
 
 function Versions(props){
   return(

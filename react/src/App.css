@@ -179,7 +179,7 @@ body{
   height:100%;
   display:flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: end;
   top:0;
   position:sticky;
   border-bottom: 2px solid;
@@ -212,12 +212,12 @@ body{
   
 }
 
-.dropdownbuttoncontainer{
+.dropdownbuttoncontainer, .chapterdropdown{
   display:flex;
   flex-direction: row;
   margin:auto;
   height:100%;
-  width:100px;
+  width: 90px;
   justify-content: center;
   align-items: center;
   align-content: center;
@@ -292,10 +292,14 @@ body{
 .centercontainer{
   display:flex;
   align-items: center;
+  position:absolute;
+  left:0;
+  align-items:center;
+  height:100%;
 }
 
 .maintitle{
-  font-size:1.5em;
+  font-size:1.25em;
   color:var(--garnet);
   margin-left:30px;
 }
@@ -398,6 +402,12 @@ body{
   padding:15px;
 }
 
+.dialogcross{
+  position:absolute;
+  top: 5px;
+  left: 5px;
+}
+
 .dialogtriangle{
   width: 0; 
   height: 0; 
@@ -456,6 +466,7 @@ body{
   margin-top:5px;
   margin-left:10px;
   transition:200ms;
+  display:none;
 }
 
 .bigdropdown{
@@ -526,6 +537,30 @@ body{
   border: 2px solid var(--gold)
 }
 
+.chapterdropdown{
+  display:none;
+}
+
+@media screen and (min-width: 330px) {
+  .chapterdropdown{
+    display:flex;
+  }
+}
+
+@media screen and (min-width: 400px) {
+  .maintitle{
+    font-size:1.5em;
+  }
+
+  .dropdownbuttoncontainer{
+    width:120px;
+  }
+
+  .optionsarrow, .optionsarrowactive{
+    display:block;
+  }
+}
+
 @media screen and (min-width: 600px) {
   .topbuttons{
     margin-left: 0px;
@@ -533,10 +568,6 @@ body{
 
   .dropdownbuttoncontainer{
     width:120px;
-  }
-
-  .dropdown{
-    font-size: 1.1em;
   }
 
   .knotcolumn{

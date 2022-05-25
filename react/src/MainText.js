@@ -1,6 +1,8 @@
 import React, { useState, useEffect, memo, useRef } from 'react';
 import axios from 'axios';
 import ChapterTitle from './ChapterTitle';
+import useOutsideAlerter from './OutsiderAlerter';
+import { useParams, useSearchParams } from "react-router-dom";
 
 function MainText(props) {
     const [currtext, setText] = useState("")
@@ -13,12 +15,18 @@ function MainText(props) {
     const [message, setMessage] = useState("")
     const [prevmessage, setPrevMessage] = useState("")
 
+    const [searchParams, setSearchParams] = useSearchParams()
+    const chapterparam = searchParams.get('c')
+    const versionparam = searchParams.get('v')
+    console.log(`chapter = ${chapterparam} && versionparam = ${versionparam}`)
+
     // Fetch text from server
     useEffect(() => {
       axios.get(props.domain + 'c', {params: {v: props.version, c: props.chapter}}).then(res => {
         setText(res.data[0]);
         setNotes(res.data[1]);
         setShowDialog(false)
+        setSearchParams({c: props.chapter, v: props.version})
       });
       }, [props.chapter, props.version])
 
@@ -55,14 +63,18 @@ function MainText(props) {
       <SideNotes key={"sidenotes"} chapheight={height} notes={sidenotes} chapter={props.chapter} version={props.version} showdialog={showdialog} ondialogchange={setShowDialog} onMessageChange={setMessage} prevmessage={prevmessage} onPrevMessageChange={setPrevMessage} onChangeDialogPos={setDialogPos}/>
     </div>
     {showdialog &&
-      <Dialog pos={dialogpos} message={message} height={height}/>
+      <Dialog pos={dialogpos} message={message} height={height} setShowDialog={setShowDialog}/>
     } 
     </>  
     )
   }
 
+
+
 function Dialog(props){
   const [scrolloffset, setOffset] = useState(window.pageYOffset);
+  const wrapperRef = useRef(null)
+  useOutsideAlerter([wrapperRef], props.setShowDialog, props.showdialog)
 
   useEffect(() => {
       const onScroll = () => setOffset(window.pageYOffset);
@@ -75,8 +87,8 @@ function Dialog(props){
 
   return(
   <>
-    <div className="dialogcontainer" style={{marginTop: `${props.pos - scrolloffset + 5}px`}}>
-      <div className="dialog">{props.message}</div>
+    <div ref={wrapperRef} className="dialogcontainer" style={{marginTop: `${props.pos - scrolloffset + 5}px`}}>
+        <div className="dialog">{props.message}</div>
       <div className="dialogtriangle"></div>
     </div>
   </>
