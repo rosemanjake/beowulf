@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback, memo } from 'react';
 
 function BottomBar(props) {
-  const [showtoc, setShowToC] = useState(false);
-  const [showvdrop, setVDrop] = useState(false); // show version dropdown
 
   const changeChapter = (shift) => {
     if (shift + props.chapter > 43){

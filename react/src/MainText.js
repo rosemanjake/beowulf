@@ -15,27 +15,30 @@ function MainText(props) {
     const [message, setMessage] = useState("")
     const [prevmessage, setPrevMessage] = useState("")
     const [mainclass, setMainClass] = useState("maincontainer")
+    const [loading, setLoading] = useState(false)
 
     const [searchParams, setSearchParams] = useSearchParams()
-    const chapterparam = searchParams.get('c')
-    const versionparam = searchParams.get('v')
-    console.log(`chapter = ${chapterparam} && versionparam = ${versionparam}`)
 
     // Fetch text from server
-    useEffect(() => {
-      //setMainClass("loading")
+    useEffect(() => {  
+      let t = setTimeout(() => {
+        setLoading(true)
+      }, 0); // Set this above 0 if you want to have the loading effects only come in after a delay
       axios.get(props.domain + 'c', {params: {v: props.version, c: props.chapter}}).then(res => {
         setText(res.data[0]);
         setNotes(res.data[1]);
         setShowDialog(false)
         setSearchParams({c: props.chapter, v: props.version})
-        setHeight(mainref.current.scrollHeight) 
-        //setMainClass("maincontainer")
+        setHeight(mainref.current.scrollHeight)
+        setLoading(false) 
+        clearTimeout(t); 
       });
+      
       }, [props.chapter, props.version])
 
     // Update height of main text div
     useEffect(() => {
+      window.scrollTo(0, 0)
       setTimeout(() => {
         setHeight(mainref.current.scrollHeight) 
       }, 500)  
@@ -53,9 +56,11 @@ function MainText(props) {
       
     }, []);
 
-
     return (
     <>
+    {loading &&
+      <div className={'loadingbox'}></div>
+    }
     <div className={mainclass} id='maincontainer'>
       <div className='knotcolumn' key='knot'></div>
       <div className ='maintextcontainer' key='maintext'>
@@ -86,8 +91,6 @@ function Dialog(props){
       window.addEventListener('scroll', onScroll, { passive: true });
       return () => window.removeEventListener('scroll', onScroll);
   }, []);
-
-  console.log(scrolloffset)
 
   return(
   <>
