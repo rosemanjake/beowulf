@@ -49,20 +49,6 @@ function TopBar(props) {
     </>
     );
   }
-
-  const throttle = (func, limit) => {
-    let inThrottle
-    console.log(inThrottle)
-    return function() {
-      const args = arguments
-      const context = this
-      if (!inThrottle) {
-        func.apply(context, args)
-        inThrottle = true
-        setTimeout(() => inThrottle = false, limit)
-      }
-    }
-  }
   
 
 // Good read on handling input: https://stackoverflow.com/questions/36683770/how-to-get-the-value-of-an-input-field-using-reactjs
