@@ -1,8 +1,26 @@
-import React, { memo } from 'react';
+import { ChapterMetadata } from './types';
 
-function BottomBar({ chapter, totalChapters, chapters, onChapterChange }) {
-  const prevChapter = chapter > 1 ? chapters.find((c) => c.number === chapter - 1) : null;
-  const nextChapter = chapter < totalChapters ? chapters.find((c) => c.number === chapter + 1) : null;
+export interface BottomBarProps {
+  chapterNumber: number;
+  totalChapters: number;
+  chapters: ChapterMetadata[];
+  onChapterChange: (nextChapter: number) => void;
+}
+
+export function BottomBar({
+  chapterNumber,
+  totalChapters,
+  chapters,
+  onChapterChange,
+}: BottomBarProps): JSX.Element {
+  const previousChapter =
+    chapterNumber > 1
+      ? chapters.find((item) => item.number === chapterNumber - 1) || null
+      : null;
+  const nextChapter =
+    chapterNumber < totalChapters
+      ? chapters.find((item) => item.number === chapterNumber + 1) || null
+      : null;
 
   return (
     <footer className="bottomcontainer">
@@ -10,21 +28,23 @@ function BottomBar({ chapter, totalChapters, chapters, onChapterChange }) {
         <button
           type="button"
           className="bottomnav-btn bottomnav-prev"
-          onClick={() => prevChapter && onChapterChange(prevChapter.number)}
-          disabled={!prevChapter}
+          onClick={() =>
+            previousChapter && onChapterChange(previousChapter.number)
+          }
+          disabled={!previousChapter}
           aria-label="Previous chapter"
         >
           <span className="bottomnav-dir">← Previous</span>
-          {prevChapter && (
+          {previousChapter && (
             <span className="bottomnav-sub">
-              {prevChapter.roman}. {prevChapter.title}
+              {previousChapter.roman}. {previousChapter.title}
             </span>
           )}
         </button>
 
         <div className="bottomnav-center">
           <div className="chapterindicator">
-            <span className="activechapter">{chapter}</span>
+            <span className="activechapter">{chapterNumber}</span>
             <span> / {totalChapters}</span>
           </div>
         </div>
@@ -47,7 +67,11 @@ function BottomBar({ chapter, totalChapters, chapters, onChapterChange }) {
 
       <div className="copyright">
         <span>© Jake Roseman · </span>
-        <a href="https://www.jakeroseman.com" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://www.jakeroseman.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           jakeroseman.com
         </a>
         <span> · </span>
@@ -62,5 +86,3 @@ function BottomBar({ chapter, totalChapters, chapters, onChapterChange }) {
     </footer>
   );
 }
-
-export default memo(BottomBar);

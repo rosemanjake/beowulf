@@ -1,7 +1,7 @@
 :root {
-  --gold: #FFD700;
+  --gold: #ffd700;
   --gold-accent: #b8860b;
-  --garnet: #9A2A2A;
+  --garnet: #9a2a2a;
   --garnet-dark: #7a1f1f;
   --LightGold: #f9f2ea;
   --LighterGold: #fffbf7;
@@ -122,7 +122,10 @@
   align-items: center;
   gap: 6px;
   white-space: nowrap;
-  transition: background-color 150ms, border-color 150ms, color 150ms;
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    color 150ms;
 }
 
 .dropdownbtn:hover,
@@ -447,7 +450,10 @@
   border-radius: 6px;
   font-size: 1rem;
   font-weight: 500;
-  transition: background-color 150ms, border-color 150ms, color 150ms;
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    color 150ms;
 }
 
 .donatebutton:hover {
@@ -692,7 +698,10 @@
   border: 2px solid var(--LighterGold);
   background-color: var(--garnet);
   cursor: pointer;
-  transition: transform 150ms, background-color 150ms, box-shadow 150ms;
+  transition:
+    transform 150ms,
+    background-color 150ms,
+    box-shadow 150ms;
 }
 
 .sidenotebutton:hover,
@@ -808,7 +817,9 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  transition: border-color 150ms, background-color 150ms;
+  transition:
+    border-color 150ms,
+    background-color 150ms;
 }
 
 .bottomnav-prev {

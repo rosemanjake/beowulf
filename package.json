@@ -3,6 +3,7 @@
   "description": "Multi-translation reader and side-by-side comparison web app for Beowulf (hwaet.io).",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "author": "Jake Roseman",
   "repository": {
     "type": "git",
@@ -15,8 +16,20 @@
     "express": "^4.21.2",
     "jsdom": "^25.0.1"
   },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/jsdom": "^21.1.7",
+    "@types/node": "^22.10.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2"
+  },
   "scripts": {
-    "start": "node index.js",
-    "build:client": "cd react && npm run build"
+    "start": "node dist/index.js",
+    "build:server": "tsc",
+    "build:client": "cd react && npm run build",
+    "build:all": "npm run build:server && npm run build:client",
+    "typecheck": "tsc --noEmit && cd react && npx tsc --noEmit",
+    "format": "prettier --write \"index.ts\" \"server/**/*.ts\" \"react/src/**/*.{ts,tsx,css}\"",
+    "format:check": "prettier --check \"index.ts\" \"server/**/*.ts\" \"react/src/**/*.{ts,tsx,css}\""
   }
 }

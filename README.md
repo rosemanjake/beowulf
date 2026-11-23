@@ -16,8 +16,9 @@ A multi-translation reader and side-by-side comparison web app for the Old Engli
 ## Local Development
 
 ```bash
-# 1. Install backend dependencies & start server (port 8080)
+# 1. Install backend dependencies, compile TypeScript, and start server (port 8080)
 npm install
+npm run build:server
 npm start
 
 # 2. In a separate terminal, install frontend dependencies & run dev server
@@ -26,11 +27,18 @@ npm install
 npm start
 ```
 
+## Typechecking & Formatting
+
+```bash
+npm run typecheck
+npm run format
+```
+
 ## Production Build & Deployment
 
 ```bash
-# Build frontend into root ./build
-npm run build:client
+# Compile TypeScript backend (./dist) and build React frontend (./build)
+npm run build:all
 
 # Deploy to Google App Engine (ensure project billing is enabled)
 gcloud app deploy --project=beowulf

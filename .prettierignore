@@ -1,0 +1,8 @@
+build/
+dist/
+node_modules/
+react/build/
+react/node_modules/
+library/
+package-lock.json
+react/package-lock.json
