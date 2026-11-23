@@ -1,139 +1,390 @@
-import React, { useState, useEffect, memo, useRef } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect, useRef, useCallback, memo } from 'react';
 import ChapterTitle from './ChapterTitle';
 import useOutsideAlerter from './OutsiderAlerter';
-import { useParams, useSearchParams } from "react-router-dom";
 
-function MainText(props) {
-    const [currtext, setText] = useState("")
-    const [sidenotes, setNotes] = useState("")
-    const [height, setHeight] = useState(0)
-    const [spaceheight, setSpaceHeight] = useState(0)
-    const mainref = useRef(null)
-    const [showdialog, setShowDialog] = useState(false)
-    const [dialogpos, setDialogPos] = useState(0)
-    const [message, setMessage] = useState("")
-    const [prevmessage, setPrevMessage] = useState("")
-    const [mainclass, setMainClass] = useState("maincontainer")
-    const [loading, setLoading] = useState(false)
+function renderTextContent(data, showLineNumbers) {
+  if (!data) return null;
 
-    const [searchParams, setSearchParams] = useSearchParams()
-
-    // Fetch text from server
-    useEffect(() => {  
-      let t = setTimeout(() => {
-        setLoading(true)
-      }, 0); // Set this above 0 if you want to have the loading effects only come in after a delay
-      axios.get(props.domain + 'c', {params: {v: props.version, c: props.chapter}}).then(res => {
-        setText(res.data[0]);
-        setNotes(res.data[1]);
-        setShowDialog(false)
-        setSearchParams({c: props.chapter, v: props.version})
-        setHeight(mainref.current.scrollHeight)
-        setLoading(false) 
-        clearTimeout(t); 
-      });
-      
-      }, [props.chapter, props.version])
-
-    // Update height of main text div
-    useEffect(() => {
-      window.scrollTo(0, 0)
-      setTimeout(() => {
-        setHeight(mainref.current.scrollHeight) 
-      }, 500)  
-    }, [props.chapter, props.version])
-
-    // Update height value on window resize
-    useEffect(() => {
-      const onResize = () => {
-        setHeight(mainref.current.scrollHeight);
-      }
-      window.removeEventListener('resize', onResize);
-      window.addEventListener('resize', onResize, { passive: true });
-
-      return () => window.removeEventListener('resize', onResize);
-      
-    }, []);
-
+  if (data.isProse) {
+    const paragraphs = data.text
+      .split(/\n\s*\n/)
+      .map((p) => p.trim())
+      .filter(Boolean);
     return (
-    <>
-    {loading &&
-      <div className={'loadingbox'}></div>
-    }
-    <div className={mainclass} id='maincontainer'>
-      <div className='knotcolumn' key='knot'></div>
-      <div className ='maintextcontainer' key='maintext'>
-        <div className='topspace'></div>     
-        <ChapterTitle key="chaptertitle" chapter={props.chapter} chaptertitles={props.chaptertitles} position={"maincontainer"}/>
-        <div ref={mainref} className={'maintext_notoc'} key='text' id='text'>{currtext}</div>
-        <div className='bottomspace'></div>
+      <div className="prosebody">
+        {paragraphs.map((para, idx) => (
+          <p key={idx} className="proseparagraph">
+            {para}
+          </p>
+        ))}
       </div>
-      <SideNotes key={"sidenotes"} chapheight={height} notes={sidenotes} chapter={props.chapter} version={props.version} showdialog={showdialog} ondialogchange={setShowDialog} onMessageChange={setMessage} prevmessage={prevmessage} onPrevMessageChange={setPrevMessage} onChangeDialogPos={setDialogPos}/>
-    </div>
-    {showdialog &&
-      <Dialog pos={dialogpos} message={message} height={height} setShowDialog={setShowDialog}/>
-    } 
-    </>  
-    )
+    );
   }
 
+  const lines = data.text.split('\n');
+  const startLine = data.lineStart || 1;
 
+  return (
+    <div className="versebody">
+      {lines.map((line, idx) => {
+        const lineNo = startLine + idx;
+        const displayNum = showLineNumbers && (idx === 0 || lineNo % 5 === 0) ? lineNo : '';
+        return (
+          <div key={idx} className="verseline">
+            {showLineNumbers && (
+              <span className="linenum" aria-hidden="true">
+                {displayNum}
+              </span>
+            )}
+            <span className="linetext">{line || '\u00A0'}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
-function Dialog(props){
-  const [scrolloffset, setOffset] = useState(window.pageYOffset);
-  const wrapperRef = useRef(null)
-  useOutsideAlerter([wrapperRef], props.setShowDialog, props.showdialog)
+function MainText({
+  version,
+  compareVersion,
+  versions,
+  chapter,
+  chapters,
+  totalChapters,
+  prefs,
+  onVersionChange,
+  onCompareVersionChange,
+}) {
+  const [primaryData, setPrimaryData] = useState(null);
+  const [compareData, setCompareData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [retryTick, setRetryTick] = useState(0);
+  const [textHeight, setTextHeight] = useState(0);
+  const [activeNote, setActiveNote] = useState(null);
+
+  const primaryTextRef = useRef(null);
+
+  const chapterMeta = chapters.find((c) => c.number === chapter);
 
   useEffect(() => {
-      const onScroll = () => setOffset(window.pageYOffset);
-      window.removeEventListener('scroll', onScroll);
-      window.addEventListener('scroll', onScroll, { passive: true });
-      return () => window.removeEventListener('scroll', onScroll);
+    const controller = new AbortController();
+    setLoading(true);
+    setError(null);
+    setActiveNote(null);
+
+    const primaryReq = fetch(`/api/chapter?v=${encodeURIComponent(version)}&c=${chapter}`, {
+      signal: controller.signal,
+    }).then((res) => {
+      if (!res.ok) throw new Error(`Failed to load chapter (${res.status})`);
+      return res.json();
+    });
+
+    const compareReq = compareVersion
+      ? fetch(`/api/chapter?v=${encodeURIComponent(compareVersion)}&c=${chapter}`, {
+          signal: controller.signal,
+        }).then((res) => {
+          if (!res.ok) throw new Error(`Failed to load comparison text (${res.status})`);
+          return res.json();
+        })
+      : Promise.resolve(null);
+
+    Promise.all([primaryReq, compareReq])
+      .then(([pData, cData]) => {
+        setPrimaryData(pData);
+        setCompareData(cData);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (err.name !== 'AbortError') {
+          setError(err.message || 'Unable to load chapter.');
+          setLoading(false);
+        }
+      });
+
+    return () => controller.abort();
+  }, [version, compareVersion, chapter, retryTick]);
+
+  // Observe height of primary text block for proportional sidenote marker placement
+  useEffect(() => {
+    const el = primaryTextRef.current;
+    if (!el) return undefined;
+
+    const measure = () => setTextHeight(el.offsetHeight || el.scrollHeight || 0);
+    measure();
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const observer = new ResizeObserver(measure);
+      observer.observe(el);
+      return () => observer.disconnect();
+    }
+
+    window.addEventListener('resize', measure, { passive: true });
+    return () => window.removeEventListener('resize', measure);
+  }, [primaryData, prefs.fontSize, prefs.showLineNumbers, compareVersion]);
+
+  const handleSelectNote = useCallback((note) => {
+    setActiveNote((prev) => (prev && prev.id === note.id ? null : note));
   }, []);
 
-  return(
-  <>
-    <div ref={wrapperRef} className="dialogcontainer" style={{marginTop: `${props.pos - scrolloffset + 5}px`}}>
-        <div className="dialog">{props.message}</div>
-      <div className="dialogtriangle"></div>
+  const sidenotes = primaryData?.sidenotes || [];
+
+  return (
+    <main
+      className={`maincontainer font-${prefs.fontSize} ${
+        compareVersion ? 'maincontainer-compare' : ''
+      }`}
+      id="maincontainer"
+    >
+      <div className="readingframe">
+        <div className="knotcolumn" aria-hidden="true" />
+
+        <div className="readingarea">
+          <ChapterTitle
+            chapter={chapter}
+            roman={primaryData?.roman || chapterMeta?.roman}
+            title={primaryData?.title || chapterMeta?.title}
+          />
+
+          {error && (
+            <div className="error-banner" role="alert">
+              <span>{error}</span>
+              <button
+                type="button"
+                className="retry-btn"
+                onClick={() => setRetryTick((t) => t + 1)}
+              >
+                Retry
+              </button>
+            </div>
+          )}
+
+          {!primaryData && loading && (
+            <div className="loading-placeholder" aria-live="polite">
+              Loading fitt…
+            </div>
+          )}
+
+          {primaryData && !compareVersion && (
+            <div className="singlecolumn-layout">
+              <div
+                ref={primaryTextRef}
+                id="text"
+                className={`textsurface ${loading ? 'is-loading' : ''}`}
+              >
+                {renderTextContent(primaryData, prefs.showLineNumbers)}
+              </div>
+
+              {prefs.showSideNotes && sidenotes.length > 0 && (
+                <SideNotes
+                  chapHeight={textHeight}
+                  notes={sidenotes}
+                  activeNoteId={activeNote?.id || null}
+                  onSelectNote={handleSelectNote}
+                />
+              )}
+            </div>
+          )}
+
+          {primaryData && compareVersion && (
+            <>
+              <div className={`compare-grid ${loading ? 'is-loading' : ''}`}>
+                <section className="compare-pane" aria-label="Primary translation pane">
+                  <div className="compare-pane-header">
+                    <select
+                      aria-label="Primary translation"
+                      className="compare-select"
+                      value={version}
+                      onChange={(e) => onVersionChange(e.target.value)}
+                    >
+                      {versions.map((v) => (
+                        <option key={v.id} value={v.id}>
+                          {v.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="textsurface">
+                    {renderTextContent(primaryData, prefs.showLineNumbers)}
+                  </div>
+                </section>
+
+                <section className="compare-pane" aria-label="Comparison translation pane">
+                  <div className="compare-pane-header">
+                    <select
+                      aria-label="Comparison translation"
+                      className="compare-select"
+                      value={compareVersion}
+                      onChange={(e) => onCompareVersionChange(e.target.value)}
+                    >
+                      {versions.map((v) => (
+                        <option key={v.id} value={v.id}>
+                          {v.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="textsurface">
+                    {compareData ? (
+                      renderTextContent(compareData, prefs.showLineNumbers)
+                    ) : (
+                      <div className="loading-placeholder">Loading comparison…</div>
+                    )}
+                  </div>
+                </section>
+              </div>
+
+              {prefs.showSideNotes && sidenotes.length > 0 && (
+                <details className="compare-notes">
+                  <summary>Marginal Glosses ({sidenotes.length})</summary>
+                  <ul className="compare-notes-list">
+                    {sidenotes.map((note) => (
+                      <li key={note.id}>{note.text}</li>
+                    ))}
+                  </ul>
+                </details>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+
+      {activeNote && !compareVersion && prefs.showSideNotes && (
+        <Dialog note={activeNote} onClose={() => setActiveNote(null)} />
+      )}
+    </main>
+  );
+}
+
+function SideNotes({ chapHeight, notes, activeNoteId, onSelectNote }) {
+  const usableHeight = Math.max(0, chapHeight - 16);
+
+  return (
+    <aside className="sidenotes" aria-label="Marginal glosses">
+      {notes.map((note, idx) => {
+        const topPx = Math.round((usableHeight * note.position) / 100);
+        const isActive = note.id === activeNoteId;
+        return (
+          <button
+            key={note.id}
+            type="button"
+            data-note-id={note.id}
+            className={`sidenotebutton ${isActive ? 'is-active' : ''}`}
+            style={{ top: `${topPx}px` }}
+            aria-label={`Marginal note ${idx + 1}`}
+            aria-expanded={isActive}
+            onClick={() => onSelectNote(note)}
+          />
+        );
+      })}
+    </aside>
+  );
+}
+
+function Dialog({ note, onClose }) {
+  const wrapperRef = useRef(null);
+  const [pos, setPos] = useState({
+    top: 120,
+    left: undefined,
+    right: 20,
+    maxWidth: 300,
+    side: 'left',
+    arrowTop: 14,
+  });
+
+  useOutsideAlerter([wrapperRef], () => onClose(), true, '.sidenotebutton');
+
+  useEffect(() => {
+    const updatePos = () => {
+      const marker = document.querySelector(`[data-note-id="${note.id}"]`);
+      if (!marker) return;
+      const rect = marker.getBoundingClientRect();
+      const dialogHeight = wrapperRef.current?.offsetHeight || 64;
+      const markerCenterY = rect.top + rect.height / 2;
+      const spaceRight = window.innerWidth - rect.right - 16;
+
+      const side = spaceRight >= 240 ? 'right' : 'left';
+      const maxWidth =
+        side === 'right'
+          ? Math.min(300, Math.max(180, Math.floor(spaceRight - 10)))
+          : Math.min(300, Math.max(180, Math.floor(rect.left - 24)));
+
+      const minTop = 66;
+      const maxTop = Math.max(minTop, window.innerHeight - dialogHeight - 16);
+      const idealTop = markerCenterY - Math.min(dialogHeight / 2, 24);
+      const top = Math.round(Math.min(Math.max(minTop, idealTop), maxTop));
+      const arrowTop = Math.round(
+        Math.min(Math.max(8, markerCenterY - top - 8), Math.max(8, dialogHeight - 24))
+      );
+
+      setPos({
+        top,
+        left: side === 'right' ? Math.round(rect.right + 10) : undefined,
+        right: side === 'left' ? Math.round(window.innerWidth - rect.left + 10) : undefined,
+        maxWidth,
+        side,
+        arrowTop,
+      });
+    };
+
+    updatePos();
+    const rafId = window.requestAnimationFrame(updatePos);
+    window.addEventListener('scroll', updatePos, { passive: true });
+    window.addEventListener('resize', updatePos, { passive: true });
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      window.removeEventListener('scroll', updatePos);
+      window.removeEventListener('resize', updatePos);
+    };
+  }, [note.id, note.text]);
+
+  return (
+    <div
+      ref={wrapperRef}
+      className={`dialogcontainer dialog-${pos.side}`}
+      style={{
+        top: `${pos.top}px`,
+        left: pos.left !== undefined ? `${pos.left}px` : undefined,
+        right: pos.right !== undefined ? `${pos.right}px` : undefined,
+        maxWidth: `${pos.maxWidth}px`,
+      }}
+      role="dialog"
+      aria-label="Marginal gloss"
+    >
+      {pos.side === 'right' && (
+        <div
+          className="dialogtriangle dialogtriangle-left"
+          style={{ marginTop: `${pos.arrowTop}px` }}
+          aria-hidden="true"
+        />
+      )}
+      <div className="dialog">
+        <div className="dialog-body">{note.text}</div>
+        <button
+          type="button"
+          className="dialog-close"
+          onClick={onClose}
+          aria-label="Close note"
+        >
+          <svg viewBox="0 0 14 14" width="12" height="12" aria-hidden="true">
+            <path
+              d="M2.5 2.5L11.5 11.5M11.5 2.5L2.5 11.5"
+              stroke="currentColor"
+              strokeWidth="1.75"
+              strokeLinecap="round"
+            />
+          </svg>
+        </button>
+      </div>
+      {pos.side === 'left' && (
+        <div
+          className="dialogtriangle dialogtriangle-right"
+          style={{ marginTop: `${pos.arrowTop}px` }}
+          aria-hidden="true"
+        />
+      )}
     </div>
-  </>
-  )
+  );
 }
 
-function SideNotes(props){
-  return(
-    <>
-    <div className='sidenotes' key='notes'>
-    {
-      Object.keys(props.notes)
-      .map(position =>
-        <SideNote key={`${Math.random() * 999999}`} chapheight={props.chapheight} currpos={parseFloat(position)} message={props.notes[position]} showdialog={props.showdialog} ondialogchange={props.ondialogchange} onMessageChange={props.onMessageChange} prevmessage={props.prevmessage} onPrevMessageChange={props.onPrevMessageChange} onChangeDialogPos={props.onChangeDialogPos}/>
-      )     
-    }
-    </div>
-    </>
-  )
-}
-
-function SideNote(props){
-  const [finalpos, setFinalPos] = useState((props.chapheight * (props.currpos) / 100) + 60) 
-
-  return(
-    <div className="sidenotebutton" style={{marginTop: `${finalpos}px`}} onClick={() => {
-      if(props.showdialog && props.message != props.prevmessage){
-        props.ondialogchange(props.showdialog)
-      }
-      else{
-        props.ondialogchange(!props.showdialog)
-      }
-
-      props.onMessageChange(props.message)
-      props.onPrevMessageChange(props.message)
-      props.onChangeDialogPos(finalpos)
-    }}></div>        
-  )
-}
-
-export default memo(MainText)
+export default memo(MainText);

@@ -1,11 +1,14 @@
-import { memo } from "react";
+import { memo } from 'react';
 
-function ChapterTitle(props){
-    return (
-      <>
-        <div className={(props.position === 'maincontainer') ? 'mobilechaptertitle' : 'chaptertitle'}>{props.chaptertitles[props.chapter]}</div>
-      </>    
-    )
-  }
+function ChapterTitle({ chapter, roman, title }) {
+  const heading = roman && title ? `${roman}. ${title}` : title || `Chapter ${chapter}`;
 
-export default memo(ChapterTitle)
+  return (
+    <div className="chapterheader">
+      <h1 className="chapterheading">{heading}</h1>
+      <div className="titleline" aria-hidden="true" />
+    </div>
+  );
+}
+
+export default memo(ChapterTitle);

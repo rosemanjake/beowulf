@@ -1,34 +1,66 @@
-import React, { useState, useEffect, useCallback, memo } from 'react';
+import React, { memo } from 'react';
 
-function BottomBar(props) {
-
-  const changeChapter = (shift) => {
-    if (shift + props.chapter > 43){
-      props.onChapterChange(1)
-    } else if(shift + props.chapter > 0){
-      props.onChapterChange(props.chapter + shift)
-    }
-    else{
-      props.onChapterChange(43)
-    }
-  }
+function BottomBar({ chapter, totalChapters, chapters, onChapterChange }) {
+  const prevChapter = chapter > 1 ? chapters.find((c) => c.number === chapter - 1) : null;
+  const nextChapter = chapter < totalChapters ? chapters.find((c) => c.number === chapter + 1) : null;
 
   return (
-    <>
-    <div className="bottomcontainer">
-      <div className='bottombar'>
-          <div className='chapterbutton' onClick={() => props.onChapterChange(1)}>{"<<"}</div>
-          <div className='chapterbutton' onClick={() => changeChapter(-1)}>{"<"}</div>
-          <div className='chapterindicator'><div className="activechapter">{props.chapter}</div>{" / 43"}</div>
-          <div className='chapterbutton' onClick={() => changeChapter(1)}>{">"}</div>
-          <div className='chapterbutton' onClick={() => props.onChapterChange(43)}>{">>"}</div>
+    <footer className="bottomcontainer">
+      <nav className="bottombar" aria-label="Chapter navigation">
+        <button
+          type="button"
+          className="bottomnav-btn bottomnav-prev"
+          onClick={() => prevChapter && onChapterChange(prevChapter.number)}
+          disabled={!prevChapter}
+          aria-label="Previous chapter"
+        >
+          <span className="bottomnav-dir">← Previous</span>
+          {prevChapter && (
+            <span className="bottomnav-sub">
+              {prevChapter.roman}. {prevChapter.title}
+            </span>
+          )}
+        </button>
+
+        <div className="bottomnav-center">
+          <div className="chapterindicator">
+            <span className="activechapter">{chapter}</span>
+            <span> / {totalChapters}</span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          className="bottomnav-btn bottomnav-next"
+          onClick={() => nextChapter && onChapterChange(nextChapter.number)}
+          disabled={!nextChapter}
+          aria-label="Next chapter"
+        >
+          <span className="bottomnav-dir">Next →</span>
+          {nextChapter && (
+            <span className="bottomnav-sub">
+              {nextChapter.roman}. {nextChapter.title}
+            </span>
+          )}
+        </button>
+      </nav>
+
+      <div className="copyright">
+        <span>© Jake Roseman · </span>
+        <a href="https://www.jakeroseman.com" target="_blank" rel="noopener noreferrer">
+          jakeroseman.com
+        </a>
+        <span> · </span>
+        <a
+          href="https://github.com/rosemanjake/beowulf"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          GitHub
+        </a>
       </div>
-      <div className='copyright'>© Jake Roseman 2022 | www.jakeroseman.com</div>
-    </div>
-    </>
+    </footer>
   );
 }
 
-
-
-export default memo(BottomBar)
+export default memo(BottomBar);

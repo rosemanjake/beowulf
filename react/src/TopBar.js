@@ -1,202 +1,355 @@
-import React, { useState, useEffect, useCallback, useRef, memo } from 'react';
-import ChapterTitle from './ChapterTitle';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import useOutsideAlerter from './OutsiderAlerter';
 
-let timer = 0
+function TopBar({
+  version,
+  compareVersion,
+  versions,
+  chapters,
+  chapter,
+  totalChapters,
+  prefs,
+  onUpdatePref,
+  onVersionChange,
+  onChapterChange,
+  onToggleCompare,
+}) {
+  const [openMenu, setOpenMenu] = useState(null); // 'chapters' | 'versions' | null
+  const [showOptions, setShowOptions] = useState(false);
+  const [chapterQuery, setChapterQuery] = useState('');
 
-function TopBar(props) {
-  const [showtoc, setShowToC] = useState(false);
-  const [showvdrop, setVDrop] = useState(false); // show version dropdown
-  const [showoptions, setShowOptions] = useState(false); // show version dropdown
-  const [showversionoptions, setShowVersionOptions] = useState(false)
-  const [versionhover, setVersionHover] = useState(false)
-  const [showchapteroptions, setShowChapterOptions] = useState(false)
-  const [chapterhover, setChapterHover] = useState(false)
+  const chaptersMenuRef = useRef(null);
+  const versionsMenuRef = useRef(null);
+  const optionsRef = useRef(null);
+  const hamburgerRef = useRef(null);
+  const filterInputRef = useRef(null);
+  const activeChapterItemRef = useRef(null);
 
-  const optionsref = useRef(null)
-  const hamburgerref = useRef(null)
+  useOutsideAlerter([chaptersMenuRef], () => setOpenMenu(null), openMenu === 'chapters');
+  useOutsideAlerter([versionsMenuRef], () => setOpenMenu(null), openMenu === 'versions');
+  useOutsideAlerter([optionsRef, hamburgerRef], setShowOptions, showOptions);
 
-  const f = obj => Object.fromEntries(Object.entries(obj).map(a => a.reverse()))
-  const flippedversions = f(props.versions)
+  const activeChapterMeta = chapters.find((c) => c.number === chapter);
+  const activeVersionMeta = versions.find((v) => v.id === version);
 
-  //useOutsideAlerter([optionsref, hamburgerref], onShowOptionsChange, showoptions)
+  useEffect(() => {
+    if (openMenu === 'chapters') {
+      setChapterQuery('');
+      if (activeChapterItemRef.current?.scrollIntoView) {
+        activeChapterItemRef.current.scrollIntoView({ block: 'nearest' });
+      }
+      if (filterInputRef.current?.focus) {
+        filterInputRef.current.focus();
+      }
+    }
+  }, [openMenu]);
 
-  return (
-    <>
-    <div className="topcontainer">
-      <div className='topbar'>
-        <div className="centercontainer">
-          <div className="maintitle">BEOWULF</div>
-          <div className="maintitleline"></div>
-          <ChapterTitle chapter={props.chapter} chaptertitles={props.chaptertitles}/>
-        </div>
-        <div className="topbuttons">
-          <TopDropDown type={"Chapters"} showdropdown={showversionoptions} setShowDropDown={setShowVersionOptions} setOther={setShowChapterOptions} hoverstate={versionhover} setHoverState={setVersionHover} chaptertitles={props.chaptertitles} onChapterChange={props.onChapterChange} currchapter={props.chapter}/>         
-          <TopDropDown type={"Translations"} showdropdown={showchapteroptions} setShowDropDown={setShowChapterOptions} setOther={setShowVersionOptions} hoverstate={chapterhover} setHoverState={setChapterHover} flippedversions={flippedversions} versions={props.versions} onVersionChange={props.onVersionChange} currversion={props.version}/>    
-        </div>
-        <div ref={hamburgerref} className="hamburgercontainer" onClick={() => {setShowOptions(!showoptions)}}>
-          <svg viewBox="-55 0 100 80" width="40" height="40" className="hamburger">
-            <rect width="15" height="15"></rect>
-            <rect y="30" width="15" height="15"></rect>
-            <rect y="60" width="15" height="15"></rect>
-          </svg>
-        </div>
-      </div>
-    </div>
-    {showoptions &&
-      <Options ref={optionsref} showoptions={showoptions} setShowOptions={setShowOptions} versions={props.versions} version={props.version} onVersionChange={props.onVersionChange} chapter={props.chapter} chapternums={props.chapternums} onChapterChange={props.onChapterChange}/>
-    } 
-    </>
+  const normalizedQuery = chapterQuery.trim().toLowerCase();
+  const filteredChapters = chapters.filter((c) => {
+    if (!normalizedQuery) return true;
+    return (
+      String(c.number) === normalizedQuery ||
+      c.roman.toLowerCase().includes(normalizedQuery) ||
+      c.title.toLowerCase().includes(normalizedQuery)
     );
-  }
-  
-
-// Good read on handling input: https://stackoverflow.com/questions/36683770/how-to-get-the-value-of-an-input-field-using-reactjs
-
-function TopDropDown(props){
-  const mainref = useRef(null)
-  useOutsideAlerter([mainref], props.setShowDropDown, props.showdropdown)
-
-  const containerclass = (props.type === 'Chapters') ? 'chapterdropdown' : 'dropdownbuttoncontainer'
+  });
 
   return (
     <>
-    <div ref={mainref} className="dropdowncontainer" 
-      onClick={() => 
-        {
-          props.setShowDropDown(!props.showdropdown);
-          props.setHoverState(false);
-          props.setOther(false);
-        }
-      }
-      onMouseOver={() => props.setHoverState(true)} 
-      onMouseOut={() => props.setHoverState(false)}
-    >
-    <div className={containerclass}>
-      <div className='dropdown'
-        style={(props.hoverstate) ? {color: "var(--gold)"} : {}}
-      >{props.type}</div>
-      <div 
-        className={(props.showdropdown) ? 'optionsarrowactive' : 'optionsarrow'}
-        style={(props.hoverstate) ? {borderLeft: "7px solid var(--gold)"} : {}}
-      ></div>
-    </div>
-    {props.type === "Translations" &&
-      <VersionItems showdropdown={props.showdropdown} flippedversions={props.flippedversions} onVersionChange={props.onVersionChange} versions={props.versions} currversion={props.currversion}/>
-    }
-    {props.type === 'Chapters' &&
-      <ChapterItems chaptertitles={props.chaptertitles} showdropdown={props.showdropdown} setShowDropDown={props.setShowDropDown} onChapterChange={props.onChapterChange} currchapter={props.currchapter}/>
-    }
-    </div>  
-    </>
-  )
+      <header className="topcontainer">
+        <div className="topbar">
+          <div className="brandgroup">
+            <button
+              type="button"
+              className="maintitlebtn"
+              onClick={() => onChapterChange(1)}
+              title="Return to Chapter I"
+            >
+              BEOWULF
+            </button>
+            <span className="maintitleline" aria-hidden="true" />
+            {activeChapterMeta && (
+              <span className="topbar-chapter-crumb" title={activeChapterMeta.title}>
+                {activeChapterMeta.roman}. {activeChapterMeta.title}
+              </span>
+            )}
+          </div>
 
-}
+          <nav className="topcontrols" aria-label="Reader controls">
+            <div ref={chaptersMenuRef} className="dropdownwrapper">
+              <button
+                type="button"
+                className={`dropdownbtn ${openMenu === 'chapters' ? 'is-open' : ''}`}
+                aria-expanded={openMenu === 'chapters'}
+                aria-controls="chapters-menu"
+                onClick={() => {
+                  setShowOptions(false);
+                  setOpenMenu((prev) => (prev === 'chapters' ? null : 'chapters'));
+                }}
+              >
+                <span>Ch. {activeChapterMeta ? activeChapterMeta.roman : chapter}</span>
+                <span className={`caret ${openMenu === 'chapters' ? 'caret-open' : ''}`} aria-hidden="true" />
+              </button>
 
-function VersionItems(props){
-  return(
-    <>
-    {props.showdropdown &&
-      <>
-        <div className="menuversions">
-        {
-          Object.keys(props.versions)
-            .map(version =>
-              <div className={(version == props.flippedversions[props.currversion]) ? 'activeversionentry' : 'versionentry'} key={version + "dropdown"} onClick={() => props.onVersionChange(props.versions[version])}>{version}</div>
-            )
-        }
+              {openMenu === 'chapters' && (
+                <div id="chapters-menu" className="dropdownpanel chapters-panel" role="menu">
+                  <div className="dropdown-search-wrap" onClick={(e) => e.stopPropagation()}>
+                    <input
+                      ref={filterInputRef}
+                      type="search"
+                      className="dropdown-search"
+                      placeholder={`Filter 1–${totalChapters} or title…`}
+                      value={chapterQuery}
+                      onChange={(e) => setChapterQuery(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && filteredChapters.length > 0) {
+                          onChapterChange(filteredChapters[0].number);
+                          setOpenMenu(null);
+                        }
+                      }}
+                      aria-label="Filter chapters"
+                    />
+                  </div>
+                  <div className="dropdown-list">
+                    {filteredChapters.length === 0 ? (
+                      <div className="dropdown-empty">No matching chapters</div>
+                    ) : (
+                      filteredChapters.map((c) => {
+                        const isActive = c.number === chapter;
+                        return (
+                          <button
+                            key={c.number}
+                            ref={isActive ? activeChapterItemRef : null}
+                            type="button"
+                            role="menuitem"
+                            className={`dropdown-item chapter-item ${isActive ? 'is-active' : ''}`}
+                            onClick={() => {
+                              onChapterChange(c.number);
+                              setOpenMenu(null);
+                            }}
+                          >
+                            <span className="item-roman">{c.roman}.</span>
+                            <span className="item-title">{c.title}</span>
+                          </button>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div ref={versionsMenuRef} className="dropdownwrapper">
+              <button
+                type="button"
+                className={`dropdownbtn ${openMenu === 'versions' ? 'is-open' : ''}`}
+                aria-expanded={openMenu === 'versions'}
+                aria-controls="versions-menu"
+                onClick={() => {
+                  setShowOptions(false);
+                  setOpenMenu((prev) => (prev === 'versions' ? null : 'versions'));
+                }}
+              >
+                <span>{activeVersionMeta ? activeVersionMeta.shortName : 'Translation'}</span>
+                <span className={`caret ${openMenu === 'versions' ? 'caret-open' : ''}`} aria-hidden="true" />
+              </button>
+
+              {openMenu === 'versions' && (
+                <div id="versions-menu" className="dropdownpanel versions-panel" role="menu">
+                  <div className="dropdown-list">
+                    {versions.map((v) => {
+                      const isActive = v.id === version;
+                      return (
+                        <button
+                          key={v.id}
+                          type="button"
+                          role="menuitem"
+                          className={`dropdown-item version-item ${isActive ? 'is-active' : ''}`}
+                          onClick={() => {
+                            onVersionChange(v.id);
+                            setOpenMenu(null);
+                          }}
+                        >
+                          <div className="version-item-top">
+                            <span className="version-item-name">{v.name}</span>
+                            <span className="form-badge">{v.form}</span>
+                          </div>
+                          <div className="version-item-meta">
+                            {v.translator} · {v.year}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <button
+              type="button"
+              className={`comparebtn ${compareVersion ? 'is-active' : ''}`}
+              aria-pressed={Boolean(compareVersion)}
+              onClick={() => {
+                setOpenMenu(null);
+                onToggleCompare();
+              }}
+              title="Compare two translations side by side"
+            >
+              {compareVersion ? 'Exit Compare' : 'Compare'}
+            </button>
+
+            <button
+              ref={hamburgerRef}
+              type="button"
+              className="hamburgercontainer"
+              aria-label="Reader settings and sources"
+              aria-expanded={showOptions}
+              onClick={() => {
+                setOpenMenu(null);
+                setShowOptions((prev) => !prev);
+              }}
+            >
+              <svg viewBox="0 0 24 24" width="22" height="22" className="hamburger" aria-hidden="true">
+                <circle cx="12" cy="5" r="2" />
+                <circle cx="12" cy="12" r="2" />
+                <circle cx="12" cy="19" r="2" />
+              </svg>
+            </button>
+          </nav>
         </div>
-      </>
-    }
+      </header>
+
+      {showOptions && (
+        <aside
+          ref={optionsRef}
+          className="optionscontainer"
+          aria-label="Reader settings and sources"
+        >
+          <div className="options-header">
+            <h2 className="options-title">Settings & Sources</h2>
+            <button
+              type="button"
+              className="drawer-close-btn"
+              onClick={() => setShowOptions(false)}
+              aria-label="Close settings panel"
+            >
+              <svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true">
+                <path
+                  d="M2.5 2.5L11.5 11.5M11.5 2.5L2.5 11.5"
+                  stroke="currentColor"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <div className="options">
+            <section className="options-section">
+              <h3 className="options-subtitle">Reading Preferences</h3>
+
+              <div className="pref-row">
+                <span className="pref-label">Text Size</span>
+                <div className="fontsize-group" role="group" aria-label="Text size">
+                  {[
+                    { key: 'sm', label: 'A-' },
+                    { key: 'md', label: 'A' },
+                    { key: 'lg', label: 'A+' },
+                  ].map((opt) => (
+                    <button
+                      key={opt.key}
+                      type="button"
+                      className={`fontsize-btn ${prefs.fontSize === opt.key ? 'is-active' : ''}`}
+                      onClick={() => onUpdatePref('fontSize', opt.key)}
+                      aria-pressed={prefs.fontSize === opt.key}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <label className="pref-toggle">
+                <input
+                  type="checkbox"
+                  checked={prefs.showLineNumbers}
+                  onChange={(e) => onUpdatePref('showLineNumbers', e.target.checked)}
+                />
+                <span>Show verse line numbers</span>
+              </label>
+
+              <label className="pref-toggle">
+                <input
+                  type="checkbox"
+                  checked={prefs.showSideNotes}
+                  onChange={(e) => onUpdatePref('showSideNotes', e.target.checked)}
+                />
+                <span>Show marginal glosses</span>
+              </label>
+            </section>
+
+            <section className="options-section">
+              <h3 className="options-subtitle">About</h3>
+              <p className="optionstext">
+                Designed and built by{' '}
+                <a href="https://www.jakeroseman.com" target="_blank" rel="noopener noreferrer">
+                  Jake Roseman
+                </a>
+                . Source code on{' '}
+                <a
+                  href="https://github.com/rosemanjake/beowulf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  GitHub
+                </a>
+                .
+              </p>
+              <a
+                className="donatebutton"
+                href="https://www.paypal.com/donate/?hosted_button_id=TNN9K9X56KVPQ"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Donate
+              </a>
+            </section>
+
+            <section className="options-section">
+              <h3 className="options-subtitle">Editions & Licenses</h3>
+              <p className="optionstext">
+                All texts are in the public domain or openly licensed (CC BY 4.0):
+              </p>
+              <ul className="sources-list">
+                {versions.map((v) => (
+                  <li key={v.id} className="source-entry">
+                    <div className="source-entry-head">
+                      <strong>{v.name}</strong>
+                      <span className="license-badge">{v.license}</span>
+                    </div>
+                    <div className="source-entry-desc">{v.description}</div>
+                    <div className="source-entry-links">
+                      <a href={v.sourceUrl} target="_blank" rel="noopener noreferrer">
+                        {v.sourceLabel}
+                      </a>
+                      {v.license === 'CC BY 4.0' && (
+                        <>
+                          {' · '}
+                          <a href={v.licenseUrl} target="_blank" rel="noopener noreferrer">
+                            License
+                          </a>
+                        </>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </div>
+        </aside>
+      )}
     </>
-  )
+  );
 }
 
-function ChapterItems(props){
-
-  return(
-    <>
-    <div className='bigdropdown'>
-    {props.showdropdown &&
-      <>
-        <div className="menuversions">
-        {
-          Object.keys(props.chaptertitles)
-            .map(chapter =>
-              <div className={(chapter == props.currchapter) ? 'activechapterentry' : 'chapterentry'} key={chapter + "dropdown"} onClick={() => props.onChapterChange(parseInt(chapter))}>{chapter}</div>
-            )
-        }
-        </div>
-      </>
-    }
-    </div>
-    </>
-  )
-}
-
-const Options = React.forwardRef((props, optionsref) => {
-  //useOutsideAlerter(mainref, props.setShowOptions, props.showoptions)
-
-  return(
-    <>
-    <div ref={optionsref} className="optionscontainer">
-    <div className="options">
-      <div className="donatebutton" onClick={() => window.open("https://www.paypal.com/donate/?hosted_button_id=TNN9K9X56KVPQ")}>Donate</div> 
-      <div className="optionstext">This website was designed and built by <a href="https://www.jakeroseman.com">Jake Roseman.</a></div>
-      <div className="optionstext">The source code is available <a href="https://github.com/rosemanjake/beowulf">here.</a></div>
-      <div className="optionstext">All texts are in the public domain and sourced from project Gutenberg:</div>
-      <ul>
-        <li>Gummere, Francis. (1910). <i>Beowulf.</i> <a href="https://www.gutenberg.org/ebooks/981">Gutenberg</a></li>
-        <li>Hall, Lessie. (1892). <i>Beowulf: An Anglo-Saxon Epic Poem.</i> <a href="https://www.gutenberg.org/ebooks/16328">Gutenberg</a></li>
-        <li>Kirtlan, Ernest J. B. (1914). <i>The Story of Beowulf.</i> <a href="https://www.gutenberg.org/ebooks/50742">Gutenberg</a></li>
-        <li>Morris, William. (1895). <i>The Tale of Beowulf, Sometime King of the Folk of the Weder Geats.</i> <a href="https://www.gutenberg.org/ebooks/20431">Gutenberg</a></li>
-      </ul>   
-    </div>
-    </div>
-    </>
-  )
-});
-
-function Versions(props){
-  return(
-    <>
-      {
-      Object.keys(props.versions)
-        .map(version =>
-          <div className='versionentry' key={version + "dropdown"} onClick={() => props.onVersionChange(props.versions[version])}>{version}</div>
-        )
-      }
-    </>
-  )
-}
-
-function romanise (num) {
-  if (isNaN(num))
-      return NaN;
-  var digits = String(+num).split(""),
-      key = ["","C","CC","CCC","CD","D","DC","DCC","DCCC","CM",
-             "","X","XX","XXX","XL","L","LX","LXX","LXXX","XC",
-             "","I","II","III","IV","V","VI","VII","VIII","IX"],
-      roman = "",
-      i = 3;
-  while (i--)
-      roman = (key[+digits.pop() + (i * 10)] || "") + roman;
-  return Array(+digits.join("") + 1).join("M") + roman;
-}
-
-function ToC(props){
-  return(
-    <>
-    {
-      props.chapternums
-        .map(chapnum =>
-          <div className={(props.showentries) ? 'tocentry' : 'hidden'} key={chapnum} onClick={() => {props.onChapterChange(parseInt(chapnum))}}>{romanise(parseInt(chapnum))}</div>        
-        )
-    }
-    </>
-  )
-}
-
-
-
-export default memo(TopBar)
+export default memo(TopBar);

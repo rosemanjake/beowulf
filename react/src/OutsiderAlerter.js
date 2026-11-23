@@ -1,30 +1,44 @@
-import React, { useRef, useEffect } from "react";
+import { useEffect, useRef } from 'react';
 
-// Pass this a div's reference, setState function, and state variable
-// It makes it so that if you click outside that div, it will turn the state false (hiding the div)
-function useOutsideAlerter(refs, changeState, state) {
+/**
+ * Invokes onDismiss(false) when clicking outside all tracked refs or pressing Escape.
+ * Supports optional ignoreSelector (e.g. '.sidenotebutton') so switching markers avoids flicker.
+ */
+function useOutsideAlerter(refs, onDismiss, isActive = true, ignoreSelector = null) {
+  const onDismissRef = useRef(onDismiss);
+  onDismissRef.current = onDismiss;
 
+  const refsRef = useRef(refs);
+  refsRef.current = refs;
 
   useEffect(() => {
-    /**
-     * Alert if clicked on outside of element
-     */
+    if (!isActive) return undefined;
+
     function handleClickOutside(event) {
-      refs.forEach(ref => {
-        if (ref.current && !ref.current.contains(event.target)) {
-          //alert("You clicked outside of me!");
-          changeState(false)  
-        }
-      })
+      if (ignoreSelector && event.target instanceof Element && event.target.closest(ignoreSelector)) {
+        return;
+      }
+      const clickedOutsideAll = refsRef.current.every(
+        (ref) => !ref.current || !ref.current.contains(event.target)
+      );
+      if (clickedOutsideAll) {
+        onDismissRef.current(false);
+      }
     }
 
-    // Bind the event listener
-    document.addEventListener("mousedown", handleClickOutside);
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') {
+        onDismissRef.current(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
     return () => {
-      // Unbind the event listener on clean up
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [refs]);
+  }, [isActive, ignoreSelector]);
 }
 
-export default useOutsideAlerter
+export default useOutsideAlerter;
